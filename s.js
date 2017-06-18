@@ -1,25 +1,20 @@
 window.s = {};
 s.interactive = true;
 
-s.focus = function(fram, dir) {
+s.focus = function(fram_idx, dir) {
+  var focusedFram = s.a[fram_idx];
+  var previousFram = (s.a[fram_idx-1] || false);
   s.a.map(function(el){removeClasses(el, ["focused", "previous"])});
-  s.a.slice(0,max(0,fram))
-    .map(function(beforeEl){
-      addClass(beforeEl, "revealed");
-      removeClass(beforeEl, "hidden")});
-  if (dir == "down") {
-    s.a.slice(fram -1, fram)
-      .map(function(prevEl){addClass(prevEl, "previous")})
-  }
-
-  s.a.slice(fram, -1)
-    .map(function(afterEl){addClass(afterEl, "hidden")});
-
-  var focusedFram = s.a[fram];
+  s.a.slice(0,max(0,fram_idx))
+    .map(function(beforeFram){
+      addClass(beforeFram, "revealed");
+      removeClass(beforeFram, "hidden")});
+  if (dir == "down") {addClass(previousFram, "previous")};
+  s.a.slice(fram_idx, -1)
+    .map(function(afterFram){addClass(afterFram, "hidden")});
   addClass(focusedFram, "focused");
   removeClasses(focusedFram, ["previous","revealed","hidden"]);
-
-  s.keepInView(focusedFram);
+  s.keepInView(focusedFram, previousFram);
 }
 
 s.focusNext = function(){
@@ -32,17 +27,16 @@ s.focusPrevious = function(){
   else {s.fram -= 1; s.focus(s.fram, "up") }
 }
 
-s.keepInView = function(el) {
-  var o = el.getBoundingClientRect();
-  if (o.y < 0) { 
-    // element's top is above viewport, scroll up and add breath
-    window.scrollBy(0, o.y - o.height);
-  } else if (o.y < o.height) {
-    // we are too close to the top, the previous frame is probably
-    // not visible. Pull up and add extra breath
-    window.scrollBy(0, o.height * (-1));
-  } else if (o.bottom > window.innerHeight) { 
-    window.scrollBy(0, o.bottom - window.innerHeight + o.height);
+s.keepInView = function(fram, prevFram) {
+  if (!prevFram) { return true } // first fram on page
+  else {
+    var rect = fram.getBoundingClientRect();
+    /* To keep prev visible on top:
+       var prev_rect = prevFram.getBoundingClientRect();
+       window.scrollTo(0, prev_rect.top + window.pageYOffset); */
+    targetTop = rect.bottom + window.pageYOffset - (window.innerHeight * .9);
+    if (rect.bottom === 0) {window.scrollTo(0, window.pageYOffset) }
+    else {window.scrollTo(0, targetTop)}
   }
 }
 
