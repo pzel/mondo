@@ -4,42 +4,36 @@ A tool to build web-based presentations in the Socratic style
 
 # HOW?
 
-0. Clone this repo into a throwaway directory in your project
+#### 1. Clone this repo into a throwaway directory in your project
 
-```
-$ git clone https://github.com/pzel/mondo.git _mondo
-```
+    $ git clone https://github.com/pzel/mondo.git _mondo
 
-1. Write a markdown file in the following format:
 
-```
-$ cat ./preso.qa
-Q:
-This is a question. All markdown is legal within the question, up to the next line with just
-"A:"
-on it.
+#### 2. Write a markdown file in the following format:
 
-A:
-This is an answer. All markdown is legal within the answer, up to the next line with just
-"Q:"
-on it.
-```
+    $ cat ./preso.qa
+    Q:
+    This is a question. All markdown is legal within the question, up to the next line with just
+    "A:"
+    on it.
 
-2. Make a footer file:
+    A:
+    This is an answer. All markdown is legal within the answer, up to the next line with just
+    "Q:"
+    on it.
 
-```
-$ cat ./footer.html
-<span>&copy; 2017 Myself</span>
-$
-```
 
-3. Build your presentation:
+#### 3. Make a footer file:
 
-```
-$ _mondo/build ./preso.qa ./footer.html 'This is the title' > preso.html
+    $ cat ./footer.html
+    <span>&copy; 2017 <a href="https://my-cool.website">Alyssa P. Hacker</a></span>
+    $
 
-```
+#### 4. Build your presentation:
 
-4. Enjoy! Fork, hack and teach!
+    $ _mondo/build ./preso.qa ./footer.html 'This is the title' > preso.html
+
+
+#### 5. Fork it, hack it, and teach people!
 
 
