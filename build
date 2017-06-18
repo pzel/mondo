@@ -106,6 +106,7 @@ def main
     out = load_file(File.dirname(__FILE__) + "/core.html")
       .sub!("___FRAMS___", frams)
       .gsub!("___TITLE___", arg(2))
+      .gsub!("___S.JS___", load_file(File.dirname(__FILE__) + "/s.js"))
       .sub!("___FOOTER___", footer)
     puts out
     exit 0
