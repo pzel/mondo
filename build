@@ -26,15 +26,16 @@ require 'open3'
 $MARKDOWN_CMD = 'markdown -f+html'
 $USAGE = "Usage:
 
- build -t                                          Run test suite
- build -h                                          Print this message
- build source.qa footer.html 'title of page'       Convert .qa  to html, add footer, set title
+ build -t                                      Run test suite
+ build -h                                      Print this message
+ build source.qa footer.html 'title of page'   Convert .qa to html, add footer,
+                                                 and set title
 
 The footer will be inserted verbatim at the end of the presentation.
-It's where you can place copyright information and relevant links or references.
-If you don't care for these, just use /dev/null as the second argument to build
+It's where you can place copyright information and relevant links or
+references. If you don't care for these, just use /dev/null as the second
+argument to the build script.
 "
- 
 # String -> HtmlFram
 def markdown(s)
   stdin, stdout, stderr = Open3.popen3($MARKDOWN_CMD)
@@ -94,11 +95,10 @@ def main
     frams = build_frams(File.read(arg(0)))
     footer = File.read(arg(1))
     out = File.read(File.dirname(__FILE__) + "/core.html")
-    out = File.read(File.dirname(__FILE__) + "/core.html")
-      .sub!("___FRAMS___", frams)
       .gsub!("___TITLE___", CGI::escapeHTML(arg(2)))
-      .gsub!("___CSS___", File.read(File.dirname(__FILE__) + "/style.css"))
-      .gsub!("___JS___", File.read(File.dirname(__FILE__) + "/s.js"))
+      .sub!("___FRAMS___", frams)
+      .sub!("___CSS___", File.read(File.dirname(__FILE__) + "/style.css"))
+      .sub!("___JS___", File.read(File.dirname(__FILE__) + "/s.js"))
       .sub!("___FOOTER___", footer)
     puts out
     exit 0
