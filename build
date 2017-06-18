@@ -20,21 +20,25 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-
+require 'cgi'
 require 'open3'
+
 $MARKDOWN_CMD = 'markdown -f+html'
+$USAGE = "Usage:
 
-# Filename -> String
-def load_file(filename)
-  File.read(filename)
-end
+ build -t                                          Run test suite
+ build -h                                          Print this message
+ build source.qa footer.html 'title of page'       Convert .qa  to html, add footer, set title
 
+The footer will be inserted verbatim at the end of the presentation.
+It's where you can place copyright information and relevant links or references.
+If you don't care for these, just use /dev/null as the second argument to build
+"
+ 
 # String -> HtmlFram
 def markdown(s)
   stdin, stdout, stderr = Open3.popen3($MARKDOWN_CMD)
-  stdin.puts(s)
-  stdin.close
-  stdout.read
+  stdin.puts(s) ; stdin.close ; stdout.read
 end
 
 # String -> [ [Q,A] ]
@@ -57,15 +61,12 @@ def build_frams(string)
     .join()
 end
 
-# Imperative land
-
 def test
   got = build_frams(test_input)
   if got.strip() == test_output.strip()
     puts "IT WORKS"; exit 0
   else
-    puts "FAILED WITH: #{got}\nWANTED: #{test_output.strip()}"
-    exit 1
+    puts "FAILED WITH:\n#{got}\nWANTED:\n#{test_output.strip()}"; exit 1
   end
 end
 
@@ -83,30 +84,21 @@ def test_output
 </answer></fram>"""
 end
 
-def print_usage
-  puts """
-Usage:
-
- build -t                                          Run test suite
- build -h                                          Print this message
- build source.qa footer.html 'title of page'       Convert .qa  to html, add footer, set title
-"""
-end
-
-def arg(n) 
-  ARGV[n] || (print_usage; exit 1)
-end
+def arg(n); ARGV[n] || (print_usage; exit 1); end
+def print_usage; puts $USAGE; end
 
 def main
   if ARGV[0] == "-t" then test
   elsif ARGV[0] == "-h" then print_usage; exit 0
   else
-    frams = build_frams(load_file(arg(0)))
-    footer = load_file(arg(1))
-    out = load_file(File.dirname(__FILE__) + "/core.html")
+    frams = build_frams(File.read(arg(0)))
+    footer = File.read(arg(1))
+    out = File.read(File.dirname(__FILE__) + "/core.html")
+    out = File.read(File.dirname(__FILE__) + "/core.html")
       .sub!("___FRAMS___", frams)
-      .gsub!("___TITLE___", arg(2))
-      .gsub!("___S.JS___", load_file(File.dirname(__FILE__) + "/s.js"))
+      .gsub!("___TITLE___", CGI::escapeHTML(arg(2)))
+      .gsub!("___CSS___", File.read(File.dirname(__FILE__) + "/style.css"))
+      .gsub!("___JS___", File.read(File.dirname(__FILE__) + "/s.js"))
       .sub!("___FOOTER___", footer)
     puts out
     exit 0

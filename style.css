@@ -1,0 +1,75 @@
+body { margin: 0; }
+article {
+  border-bottom: 1px black solid;
+  line-height: 1.4;
+}
+code, pre {font-family: "Monaco", Monospace; }
+fram, fram > * { display: block }
+fram.revealed > answer { visibility: visible; }
+fram.previous > answer { font-weight: bold; }
+fram.focused > question { visibility: visible; } 
+fram.focused > answer, fram.hidden > answer { 
+  visibility: hidden; }
+fram.hidden > question, fram.hidden > answer { 
+  visibility: hidden; }
+fram {
+  position:relative;
+  clear: both;
+  border-top: 1px #999 solid;
+  padding: 4em 0em 10em;
+  margin-bottom: 2em;
+  width: 100%;
+}
+fram > ord {
+  text-align: left;
+  font-size: 60%;
+  line-height: 1;
+  float: left;
+  position: absolute;
+  top: 0;
+  left: 1; 
+  /* comment the following to display qa numbers in topleft corner */
+  display: none;
+}
+
+fram > question, fram > answer {
+  float: left;
+  width: 46%;
+  padding-bottom: 2em;
+}	 
+fram > answer {
+  margin-left: 4%;
+}
+fram > question { margin-left: 2%; overflow-x: auto; }
+fram > question > references, 
+fram > answer > references {
+  display: block;
+  padding: 3em 0 2em;
+  font-size: 80%;
+}
+fram > question > references:before, fram > answer > references:before {
+  content: " ";
+  width: 30%;
+  display: inline-block;
+  border-top: 1px solid #888;
+}
+references > ul { 
+  list-style-type: none;
+  padding: 0 0;
+  margin: 0;
+}
+ref {
+  font-size: 120%;
+  padding-right: 0.2em;
+}
+h1#main-title {
+  float: left;
+  width: 48%;
+  margin-left: 2%;
+}
+div.instructions{
+  margin-top: 1em;
+  float: right;
+  width: 48%;
+}
+footer { padding: 1em 2%; font-size: small; }
