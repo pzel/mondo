@@ -4,8 +4,9 @@ s.interactive = true;
 s.focus = function(fram, dir) {
   s.a.map(function(el){removeClasses(el, ["focused", "previous"])});
   s.a.slice(0,max(0,fram))
-    .map(function(beforeEl){addClass(beforeEl, "revealed");
-			    removeClass(beforeEl, "hidden")});
+    .map(function(beforeEl){
+      addClass(beforeEl, "revealed");
+      removeClass(beforeEl, "hidden")});
   if (dir == "down") {
     s.a.slice(fram -1, fram)
       .map(function(prevEl){addClass(prevEl, "previous")})
@@ -46,9 +47,9 @@ s.keepInView = function(el) {
 }
 
 s.disable = function(){
-	s.interactive = false;
-	s.a.map(function(el){removeClasses
-											 (el, ["focused", "hidden", "previous", "revealed"])});
+  s.interactive = false;
+  s.a.map(function(el){removeClasses(
+    el, ["focused", "hidden", "previous", "revealed"])});
 }
 
 s.setup = function() {
@@ -64,19 +65,19 @@ s.setup();
 
 var el = document;
 el.onkeydown = function(evt) {
-	if (s.interactive === true) {
-		evt = evt || window.event;
-		switch (evt.keyCode) {
-		case 27: // Escape
-			s.disable(); return false; break;
-		case 78: // [N]ext
-		case 40: // Down
-			s.focusNext(); return false; break;
-		case 80: // [P]revious
-		case 38: // Up
-			s.focusPrevious(); return false; break;
-		}
-	}
+  if (s.interactive === true) {
+    evt = evt || window.event;
+    switch (evt.keyCode) {
+    case 27: // Escape
+      s.disable(); return false; break;
+    case 78: // [N]ext
+    case 40: // Down
+      s.focusNext(); return false; break;
+    case 80: // [P]revious
+    case 38: // Up
+      s.focusPrevious(); return false; break;
+    }
+  }
 };
 
 function removeClasses(el, cs){cs.map(function(c){ removeClass(el, c) })}
