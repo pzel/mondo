@@ -1,0 +1,115 @@
+#!/usr/bin/env ruby
+# MIT License
+# 
+# Copyright (c) 2017 Simon Zelazny
+# 
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+# 
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+require 'open3'
+$MARKDOWN_CMD = 'markdown -f+html'
+
+# Filename -> String
+def load_file(filename)
+  File.read(filename)
+end
+
+# String -> HtmlFram
+def markdown(s)
+  stdin, stdout, stderr = Open3.popen3($MARKDOWN_CMD)
+  stdin.puts(s)
+  stdin.close
+  stdout.read
+end
+
+# String -> [ [Q,A] ]
+def parse_qas(string)
+  ("\n"+string).split(/\nQ:\s*\n/x)
+    .select{|x| x.length > 1} #remove initial nl
+    .map{|x| x.split(/\nA:\s*\n/x)}
+end
+
+# Int, [Q,A] -> HtmlFram
+def generate_fram(idx, qa_pair)
+  q,a = qa_pair.map{|s| markdown(s)}
+  "<fram ord='#{idx}'><ord>#{idx}</ord><question>#{q}</question><answer>#{a}</answer></fram>"
+end
+
+# String -> HtmlDoc
+def build_frams(string) 
+  parse_qas(string)
+    .map.with_index{|qa,idx| generate_fram(idx+1,qa)}
+    .join()
+end
+
+# Imperative land
+
+def test
+  got = build_frams(test_input)
+  if got.strip() == test_output.strip()
+    puts "IT WORKS"; exit 0
+  else
+    puts "FAILED WITH: #{got}\nWANTED: #{test_output.strip()}"
+    exit 1
+  end
+end
+
+def test_input
+"""Q:  
+How will we get this working?
+A:
+By moving step by step.
+"""
+end
+
+def test_output
+  """<fram ord='1'><ord>1</ord><question><p>How will we get this working?</p>
+</question><answer><p>By moving step by step.</p>
+</answer></fram>"""
+end
+
+def print_usage
+  puts """
+Usage:
+
+ build -t                                          Run test suite
+ build -h                                          Print this message
+ build source.qa footer.html 'title of page'       Convert .qa  to html, add footer, set title
+"""
+end
+
+def arg(n) 
+  ARGV[n] || (print_usage; exit 1)
+end
+
+def main
+  if ARGV[0] == "-t" then test
+  elsif ARGV[0] == "-h" then print_usage; exit 0
+  else
+    frams = build_frams(load_file(arg(0)))
+    footer = load_file(arg(1))
+    out = load_file(File.dirname(__FILE__) + "/core.html")
+      .sub!("___FRAMS___", frams)
+      .gsub!("___TITLE___", arg(2))
+      .sub!("___FOOTER___", footer)
+    puts out
+    exit 0
+  end
+end
+
+main()
